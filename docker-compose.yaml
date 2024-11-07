@@ -1,0 +1,55 @@
+version: '3.7'
+
+name: node-docker
+
+services:
+  node:
+    build:
+      context: ./node
+      dockerfile: Dockerfile
+    container_name: node
+    tty: true
+    volumes:
+      - ./node:/usr/src/app
+    networks:
+      - node
+    ports:
+      - "3000:3000"
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  mysql:
+    image: mysql:5.7.16
+    container_name: mysql
+    tty: true
+    environment:
+      - MYSQL_DATABASE=node
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_PASSWORD=root
+    volumes:
+      - ./mysql:/var/lib/mysql
+    networks:
+      - node
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    container_name: nginx
+    ports:
+      - "8080:80"
+    networks:
+      - node
+    depends_on:
+      - node
+      
+networks:
+  node:
+    driver: bridge
