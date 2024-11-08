@@ -9,6 +9,7 @@ services:
       dockerfile: Dockerfile
     container_name: node
     tty: true
+    entrypoint: sh -c "npm install && npm run start"
     volumes:
       - ./node:/usr/src/app
     networks:
@@ -26,17 +27,15 @@ services:
     environment:
       - MYSQL_DATABASE=node
       - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_PASSWORD=root
     volumes:
       - ./mysql:/var/lib/mysql
     networks:
       - node
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 10s
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
+      interval: 5s
       timeout: 5s
-      retries: 5
-      start_period: 30s
+      retries: 10
 
   nginx:
     build:

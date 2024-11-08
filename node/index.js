@@ -16,9 +16,13 @@ const createTableQuery = `CREATE TABLE IF NOT EXISTS user(id INT AUTO_INCREMENT 
 
 dbConnection.query(createTableQuery);
 
-const insertQuery = `INSERT INTO user(name) VALUES('Matheus')`;
+const names = ['Matheus', 'João', 'Maria', 'José', 'Ana', 'Carlos', 'Pedro', 'Paulo', 'Lucas', 'Mariana'];
 
-dbConnection.query(insertQuery);
+names.forEach(name => {
+  const insertQuery = `INSERT INTO user(name) VALUES('${name}')`;
+
+  dbConnection.query(insertQuery);
+});
 
 const listUsersQuery = `SELECT * FROM user`;
 
